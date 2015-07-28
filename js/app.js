@@ -1,33 +1,45 @@
 var shaker = new Firebase("https://shakalaka.firebaseio.com/");
 
 $(window).load(function() {
-
-  function startPoll() {
-    // initializing physics system
-
-
-    // setting gyroscope update frequency
-    gyro.frequency = 10;
-    gyro.startTracking(function(o) {
-      // updating player velocity
-      // player.body.velocity.x += o.gamma/20;
-      // player.body.velocity.y += o.beta/20;
-      $("#alpha").html("alpha" + o.alpha);
-      $("#beta").html("beta" + o.beta);
-      $("#gamma").html("gamma" + o.gamma);
-    });
-
-  }
-  startPoll();
-
+  // listen for device gyroscope
+  pollGyro(50);
 });
 
 
+function pollGyro(rate) {
+  // setting gyroscope update frequency
+  gyro.frequency = rate;
+  gyro.startTracking(function(o) {
+
+    $("#alpha").html( o.alpha);
+    $("#beta").html( o.beta);
+    $("#gamma").html( o.gamma);
+    return [o.alpha, o.beta, o.gamma]
+
+  });
+}
 
 
+function standardDeviation(values){
+  var avg = average(values);
 
-window.onload = function() {
+  var squareDiffs = values.map(function(value){
+    var diff = value - avg;
+    var sqrDiff = diff * diff;
+    return sqrDiff;
+  });
 
+  var avgSquareDiff = average(squareDiffs);
 
+  var stdDev = Math.sqrt(avgSquareDiff);
+  return stdDev;
+}
 
+function average(data){
+  var sum = data.reduce(function(sum, value){
+    return sum + value;
+  }, 0);
+
+  var avg = sum / data.length;
+  return avg;
 }
