@@ -81,7 +81,6 @@ shaker.authAnonymously(function(error, authData) {
 
 // update list of logged in users
 shaker.on("value", function(snapshot) {
-
   if (snapshot.val()) {
     var currentUsers = [];
     for(session in snapshot.val()){
@@ -101,9 +100,15 @@ shaker.on("value", function(snapshot) {
 });
 
 
-
 function assumedName(){
   var names = ['anonymous alice', 'secret sam', 'random randy', 'tricky tina', 'careful carrie', 'mystery mark']
   var rand = Math.random() * names.length;
   return names[Math.floor(rand)]
+}
+
+
+// AUDIO
+var player = new Tone.Player("./path/to/sample.mp3").toMaster();
+Tone.Buffer.onload = function(){
+  player.start();
 }
