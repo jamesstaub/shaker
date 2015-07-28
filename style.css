@@ -6,11 +6,25 @@ ul{
   list-style-type: none;
 }
 
-#nickname{
+#info{
+  width: 15%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
   padding: 10px;
+}
+
+
+#nickname{
+  display: block;
+  margin: 0px auto;
+  width: 80%;
+  padding: 10px;
+  border: solid 1px white;
   background-color: rgba(0, 0, 0, 0.3);
   color: white;
-  border: none;
-  font-size: 36px;
+  font-size: 1vw;
   font-family: arial, sans-serif;
 }
+

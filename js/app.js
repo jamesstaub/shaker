@@ -1,6 +1,6 @@
 var shaker = new Firebase("https://shakalaka.firebaseio.com/");
-var colorChannels = shaker.child("colorChannels");
 var amOnline = new Firebase("https://shakalaka.firebaseio.com/.info/connected");
+var colorChannels = shaker.child("colorChannels");
 var nickname;
 
 
@@ -34,8 +34,9 @@ function pollGyroscope(rate) {
     // })
 
     colorChannels.on("value", function(snapshot) {
-      //
-      $('body').css('background-color', 'rgba('+snapshot.val().alpha+','+snapshot.val().beta+','+snapshot.val().gamma+', 1.0)')
+      if(snapshot.val()){
+        $('body').css('background-color', 'rgba('+snapshot.val().alpha+','+snapshot.val().beta+','+snapshot.val().gamma+', 1.0)')
+      }
     }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
     });
@@ -45,7 +46,6 @@ function pollGyroscope(rate) {
     // $("#gamma").html();
   });
 }
-
 
 
 shaker.authAnonymously(function(error, authData) {
@@ -71,12 +71,8 @@ shaker.authAnonymously(function(error, authData) {
     $("#nickname").keypress(function(e) {
         if(e.which == 13) {
           nickname = $(this).val();
-          amOnline.on('value', function(snapshot) {
-            if (snapshot.val()) {
-              sessionRef.update({nickname: nickname});
-              console.log("set: " + nickname);
-            }
-          });
+          sessionRef.update({nickname: nickname});
+          $("#nickname").hide();
         }
       });
   }
