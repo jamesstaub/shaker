@@ -1,3 +1,9 @@
+// arrays to contain streams of gyroscope data
+var valueStream = {
+  alpha: [],
+  beta: [],
+  gamma: []
+}
 
 // collect stream of values into array of some length then get the std dev
 function delta(value, array, length){

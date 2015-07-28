@@ -2,13 +2,6 @@ var shaker = new Firebase("https://shakalaka.firebaseio.com/");
 var colorChannels = shaker.child("colorChannels");
 
 
-var valueStream = {
-  alpha: [],
-  beta: [],
-  gamma: []
-}
-
-
 $(window).load(function() {
   // listen for device gyroscope
   pollGyroscope(30);
