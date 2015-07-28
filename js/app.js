@@ -27,11 +27,11 @@ function pollGyroscope(rate) {
     gamma = scale(gamma, -10, 10, 0, 256);
 
     // send values to firebase
-    // colorChannels.set({
-    //   alpha: alpha,
-    //   beta: beta,
-    //   gamma: gamma
-    // })
+    colorChannels.set({
+      alpha: alpha,
+      beta: beta,
+      gamma: gamma
+    })
 
     colorChannels.on("value", function(snapshot) {
       if(snapshot.val()){
@@ -46,6 +46,8 @@ function pollGyroscope(rate) {
     // $("#gamma").html();
   });
 }
+
+
 
 
 shaker.authAnonymously(function(error, authData) {
@@ -72,11 +74,33 @@ shaker.authAnonymously(function(error, authData) {
         if(e.which == 13) {
           nickname = $(this).val();
           sessionRef.update({nickname: nickname});
-          $("#nickname").hide();
         }
       });
   }
 });
+
+// update list of logged in users
+shaker.on("value", function(snapshot) {
+
+  if (snapshot.val()) {
+    var currentUsers = [];
+    for(session in snapshot.val()){
+        for(user in snapshot.val()[session]){
+          // if this session has a nickname propery, and it's not ended (ie. its a current session)
+          if(snapshot.val()[session][user].nickname && !snapshot.val()[session][user].ended){
+            currentUsers.push(snapshot.val()[session][user].nickname);
+          }
+        }
+    }
+    $("#sessions").html(
+      currentUsers.map(function(e){
+        return "<li>"+e+"</li>";
+      })
+    )
+  }
+});
+
+
 
 function assumedName(){
   var names = ['anonymous alice', 'secret sam', 'random randy', 'tricky tina', 'careful carrie', 'mystery mark']

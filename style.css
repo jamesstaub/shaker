@@ -1,9 +1,16 @@
 body{
-  font-size: 50px;
+  font-size: 16px;
+  font-family: arial, sans-serif;
+  color: white;
 }
 
 ul{
   list-style-type: none;
+  margin: 0;
+  padding: 10px;
+}
+li{
+  padding: 2px 0;
 }
 
 #info{
@@ -25,6 +32,6 @@ ul{
   background-color: rgba(0, 0, 0, 0.3);
   color: white;
   font-size: 1vw;
-  font-family: arial, sans-serif;
+
 }
 
