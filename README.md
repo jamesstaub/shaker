@@ -1,2 +1,2 @@
 # shaker
-experiment with accelerometers and interface js
+experiment with device gyroscope
