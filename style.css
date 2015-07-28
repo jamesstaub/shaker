@@ -6,3 +6,11 @@ ul{
   list-style-type: none;
 }
 
+#nickname{
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  font-size: 36px;
+  font-family: arial, sans-serif;
+}

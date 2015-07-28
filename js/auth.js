@@ -17,10 +17,18 @@ shaker.authAnonymously(function(error, authData) {
         var sessionRef = userRef.push();
         sessionRef.child('ended').onDisconnect().set(Firebase.ServerValue.TIMESTAMP);
         sessionRef.child('began').set(Firebase.ServerValue.TIMESTAMP);
+        sessionRef.child('nickname').set(nickname || assumedName());
       }
     });
+
+
   }
 });
 
 
 
+function assumedName(){
+  var names = ['anonymous alice', 'secret sam', 'random randy', 'tricky tina', 'careful carrie', 'mystery mark']
+  var rand = Math.random() * names.length;
+  return names[Math.floor(rand)]
+}

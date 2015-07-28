@@ -1,10 +1,14 @@
 var shaker = new Firebase("https://shakalaka.firebaseio.com/");
 var colorChannels = shaker.child("colorChannels");
+var amOnline = new Firebase("https://shakalaka.firebaseio.com/.info/connected");
+var nickname;
 
 
 $(window).load(function() {
   // listen for device gyroscope
   pollGyroscope(30);
+
+
 });
 
 
@@ -23,11 +27,11 @@ function pollGyroscope(rate) {
     gamma = scale(gamma, -10, 10, 0, 256);
 
     // send values to firebase
-    colorChannels.set({
-      alpha: alpha,
-      beta: beta,
-      gamma: gamma
-    })
+    // colorChannels.set({
+    //   alpha: alpha,
+    //   beta: beta,
+    //   gamma: gamma
+    // })
 
     colorChannels.on("value", function(snapshot) {
       //
@@ -40,4 +44,46 @@ function pollGyroscope(rate) {
     // $("#beta").html();
     // $("#gamma").html();
   });
+}
+
+
+
+shaker.authAnonymously(function(error, authData) {
+  if (error) {
+    console.log("Login Failed!", error);
+  } else {
+    console.log("Authenticated successfully with payload:", authData);
+    console.log("id: "+ authData.uid);
+    var sessionRef;
+    var userid = authData.uid
+    var userRef = new Firebase("https://shakalaka.firebaseio.com/presence" + userid);
+
+    amOnline.on('value', function(snapshot) {
+      if (snapshot.val()) {
+        sessionRef = userRef.push();
+        sessionRef.child('ended').onDisconnect().set(Firebase.ServerValue.TIMESTAMP);
+        sessionRef.child('began').set(Firebase.ServerValue.TIMESTAMP);
+        sessionRef.child('nickname').set(nickname || assumedName());
+      }
+    });
+
+    // if succesfully authorized as anonymous, then create nickname field
+    $("#nickname").keypress(function(e) {
+        if(e.which == 13) {
+          nickname = $(this).val();
+          amOnline.on('value', function(snapshot) {
+            if (snapshot.val()) {
+              sessionRef.update({nickname: nickname});
+              console.log("set: " + nickname);
+            }
+          });
+        }
+      });
+  }
+});
+
+function assumedName(){
+  var names = ['anonymous alice', 'secret sam', 'random randy', 'tricky tina', 'careful carrie', 'mystery mark']
+  var rand = Math.random() * names.length;
+  return names[Math.floor(rand)]
 }
