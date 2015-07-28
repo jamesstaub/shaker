@@ -1,4 +1,5 @@
   var shaker = new Firebase("https://shakalaka.firebaseio.com/");
+  var colorChannels = shaker.child("colorChannels");
   var valueStream = {
     alpha: [],
     beta: [],
@@ -25,6 +26,15 @@ function pollGyroscope(rate) {
     alpha = scale(alpha, -10, 10, 0, 256);
     beta = scale(beta, -10, 10, 0, 256);
     gamma = scale(gamma, -10, 10, 0, 256);
+
+    // send values to firebase
+    colorChannels.set({
+      alpha: alpha,
+      beta: beta,
+      gamma: gamma
+    })
+
+
     $('body').css('background-color', 'rgba('+alpha+','+beta+','+gamma+', 1.0)')
     // $("#alpha").html();
     // $("#beta").html();
