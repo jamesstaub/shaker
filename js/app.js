@@ -1,11 +1,9 @@
-var shaker = new Firebase("https://shakalaka.firebaseio.com/");
-
-var valueStream = {
-  alpha: [],
-  beta: [],
-  gamma: []
-}
-
+  var shaker = new Firebase("https://shakalaka.firebaseio.com/");
+  var valueStream = {
+    alpha: [],
+    beta: [],
+    gamma: []
+  }
 
 
 $(window).load(function() {
@@ -18,12 +16,20 @@ function pollGyroscope(rate) {
   // set gyroscope update frequency
   gyro.frequency = rate;
   gyro.startTracking(function(o) {
-    $("#alpha").html(delta(o.alpha, valueStream.alpha, 10));
-    $("#beta").html(delta(o.beta, valueStream.beta, 10));
-    $("#gamma").html(delta(o.gamma, valueStream.gamma, 10));
+    // get the standard deviation of each gyroscope metric
+    var alpha = delta(o.alpha, valueStream.alpha, 10);
+    var beta = delta(o.beta, valueStream.beta, 10);
+    var gamma = delta(o.gamma, valueStream.gamma, 10);
+
+    // normalize gyro values between -10 and 10 to 0 to 256 range
+    alpha = scale(alpha, -10, 10, 0, 256);
+    beta = scale(beta, -10, 10, 0, 256);
+    gamma = scale(gamma, -10, 10, 0, 256);
+    $('body').css('background-color', 'rgba('+alpha+','+beta+','+gamma+', 1.0)')
+    // $("#alpha").html();
+    // $("#beta").html();
+    // $("#gamma").html();
   });
-
-
 }
 
 // collect stream of values into array of some length then get the std dev
@@ -57,4 +63,10 @@ function average(data){
 
   var avg = sum / data.length;
   return avg;
+}
+
+function scale(input, inputMin, inputMax, outputMin, outputMax){
+   input = (input - inputMin) / (inputMax - inputMin);
+   output = input * (outputMax - outputMin) + outputMin;
+   return Math.floor(output);
 }
