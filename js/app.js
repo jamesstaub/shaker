@@ -1,24 +1,39 @@
 var shaker = new Firebase("https://shakalaka.firebaseio.com/");
 
+var valueStream = {
+  alpha: [],
+  beta: [],
+  gamma: []
+}
+
+
+
 $(window).load(function() {
   // listen for device gyroscope
-  pollGyro(50);
+  pollGyroscope(30);
 });
 
 
-function pollGyro(rate) {
-  // setting gyroscope update frequency
+function pollGyroscope(rate) {
+  // set gyroscope update frequency
   gyro.frequency = rate;
   gyro.startTracking(function(o) {
-
-    $("#alpha").html( o.alpha);
-    $("#beta").html( o.beta);
-    $("#gamma").html( o.gamma);
-    return [o.alpha, o.beta, o.gamma]
-
+    $("#alpha").html(delta(o.alpha, valueStream.alpha, 10));
+    $("#beta").html(delta(o.beta, valueStream.beta, 10));
+    $("#gamma").html(delta(o.gamma, valueStream.gamma, 10));
   });
+
+
 }
 
+// collect stream of values into array of some length then get the std dev
+function delta(value, array, length){
+  array.unshift(value);
+  if(array.length > length){
+    array.pop();
+  }
+  return standardDeviation(array);
+}
 
 function standardDeviation(values){
   var avg = average(values);
