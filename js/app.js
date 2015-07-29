@@ -2,6 +2,7 @@ var shaker = new Firebase("https://shakalaka.firebaseio.com/");
 var amOnline = new Firebase("https://shakalaka.firebaseio.com/.info/connected");
 var colorChannels = shaker.child("colorChannels");
 var nickname;
+var ctx;
 
 
 
@@ -9,7 +10,7 @@ var nickname;
 
 $(window).load(function() {
   var canvas = document.getElementById("gyroCanvas");
-  var ctx = canvas.getContext("2d");
+  ctx = canvas.getContext("2d");
 
   shaker.authAnonymously(function(error, authData) {
     if (error) {
@@ -50,6 +51,7 @@ $(window).load(function() {
   shaker.on('value', function(snapshot) {
     if (snapshot.val()) {
       var currentUsers = [];
+
       for(session in snapshot.val()){
           // if this session has a nickname propery, and it's not ended (ie. its a current session)
           var userData = {};
@@ -70,14 +72,24 @@ $(window).load(function() {
         })
       )
 
-      currentUsers.forEach(function(e){
-        ctx.beginPath();
-        ctx.moveTo(50, 50);
-        ctx.lineTo(50, 250);
-        ctx.lineTo(250, 250);
-        ctx.closePath();
-        ctx.fill();
-      })
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var segmentPosition = 0;
+      for (var i = 0; i < currentUsers.length; i++) {
+        var segmentHeight = canvas.height / currentUsers.length;
+        segmentPosition += segmentHeight * i;
+
+
+
+        ctx.fillStyle = "rgb("+ Math.abs(Math.floor(currentUsers[i].gamma * 200))+", 0, 0)";
+
+
+        ctx.fillRect(0, segmentPosition , canvas.width, segmentHeight);
+
+
+      };
+
+
+
     }
   });
 });
