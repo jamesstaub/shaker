@@ -43,54 +43,33 @@ $(window).load(function() {
 
 
 // receives each users data from firebase
-shaker.orderByChild("nickname").on("value", function(snapshot) {
+shaker.on('value', function(snapshot) {
   if (snapshot.val()) {
     var currentUsers = [];
-    var began = []
     for(session in snapshot.val()){
         // if this session has a nickname propery, and it's not ended (ie. its a current session)
+        var userData = {};
         if(snapshot.val()[session].nickname && !snapshot.val()[session].ended){
-          currentUsers.push(snapshot.val()[session].nickname);
-          began.push(snapshot.val()[session].began);
+          userData.nickname = snapshot.val()[session].nickname;
+          userData.alpha = snapshot.val()[session].alpha;
+          userData.beta = snapshot.val()[session].beta;
+          userData.gamma = snapshot.val()[session].gamma;
+          userData.began = snapshot.val()[session].began;
+
+          currentUsers.push(userData);
+
         }
     }
     $("#sessions").html(
       currentUsers.map(function(e){
-        return "<li>"+e+"</li>" ;
+        return "<li>"+e.nickname+"</li>" ;
       })
     )
-     $("#data").html(
-      began.map(function(e){
-        return "<li>"+e+"</li>" ;
-      })
-    )
+
   }
 });
 
-// receives each users data from firebase
-shaker.on("value", function(snapshot) {
-  if (snapshot.val()) {
-    var currentUsers = [];
-    for(session in snapshot.val()){
-      for(user in snapshot.val()[session]){
-        if(snapshot.val()[session][user].nickname && !snapshot.val()[session][user].ended){
-          var userData = {};
-          userData.alpha = snapshot.val()[session][user].alpha;
-          userData.beta = snapshot.val()[session][user].beta;
-          userData.gamma = snapshot.val()[session][user].gamma;
-          currentUsers.push(userData);
-        }
 
-      }
-    }
-
-    // $("#data").html(
-    //   currentUsers.map(function(e){
-    //     return "<li>"+e.alpha+" "+e.beta+" "+e.gamma+ "</li>" ;
-    //   })
-    // )
-  }
-});
 
 
 function pollGyroscope(rate, sessionRef) {
