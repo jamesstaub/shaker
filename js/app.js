@@ -6,7 +6,11 @@ var nickname;
 
 
 
+
 $(window).load(function() {
+  var canvas = document.getElementById("gyroCanvas");
+  var ctx = canvas.getContext("2d");
+
   shaker.authAnonymously(function(error, authData) {
     if (error) {
       console.log("Login Failed!", error);
@@ -38,37 +42,45 @@ $(window).load(function() {
 
     }
   });
-});
 
 
 
-// receives each users data from firebase
-shaker.on('value', function(snapshot) {
-  if (snapshot.val()) {
-    var currentUsers = [];
-    for(session in snapshot.val()){
-        // if this session has a nickname propery, and it's not ended (ie. its a current session)
-        var userData = {};
-        if(snapshot.val()[session].nickname && !snapshot.val()[session].ended){
-          userData.nickname = snapshot.val()[session].nickname;
-          userData.alpha = snapshot.val()[session].alpha;
-          userData.beta = snapshot.val()[session].beta;
-          userData.gamma = snapshot.val()[session].gamma;
-          userData.began = snapshot.val()[session].began;
 
-          currentUsers.push(userData);
+  // receives each users data from firebase
+  shaker.on('value', function(snapshot) {
+    if (snapshot.val()) {
+      var currentUsers = [];
+      for(session in snapshot.val()){
+          // if this session has a nickname propery, and it's not ended (ie. its a current session)
+          var userData = {};
+          if(snapshot.val()[session].nickname && !snapshot.val()[session].ended){
+            userData.nickname = snapshot.val()[session].nickname;
+            userData.alpha = snapshot.val()[session].alpha;
+            userData.beta = snapshot.val()[session].beta;
+            userData.gamma = snapshot.val()[session].gamma;
+            userData.began = snapshot.val()[session].began;
 
-        }
-    }
-    $("#sessions").html(
-      currentUsers.map(function(e){
-        return "<li>"+e.nickname+"</li>" ;
+            currentUsers.push(userData);
+          }
+      }
+
+      $("#sessions").html(
+        currentUsers.map(function(e){
+          return "<li>"+e.nickname+"</li>" ;
+        })
+      )
+
+      currentUsers.forEach(function(e){
+        ctx.beginPath();
+        ctx.moveTo(50, 50);
+        ctx.lineTo(50, 250);
+        ctx.lineTo(250, 250);
+        ctx.closePath();
+        ctx.fill();
       })
-    )
-
-  }
+    }
+  });
 });
-
 
 
 
