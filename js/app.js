@@ -2,12 +2,11 @@ var shaker = new Firebase("https://shakalaka.firebaseio.com/");
 var amOnline = new Firebase("https://shakalaka.firebaseio.com/.info/connected");
 var colorChannels = shaker.child("colorChannels");
 var nickname;
-
+var gyroData = {};
 
 $(window).load(function() {
   // listen for device gyroscope
   pollGyroscope(30);
-
 
 });
 
@@ -73,6 +72,13 @@ shaker.authAnonymously(function(error, authData) {
           sessionRef.update({nickname: nickname});
         }
       });
+
+
+    // set current user's gyro data
+    sessionRef.child('gyro').set({
+
+    })
+
   }
 });
 

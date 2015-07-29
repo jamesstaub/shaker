@@ -3,6 +3,9 @@ body{
   font-family: arial, sans-serif;
   color: white;
 }
+h1{
+  font-size: 24px;
+}
 
 ul{
   list-style-type: none;
@@ -14,17 +17,14 @@ li{
 }
 
 #info{
-  width: 15%;
-  position: fixed;
-  top: 0;
-  left: 0;
+
   height: 100%;
   padding: 10px;
 }
 
 
 #nickname{
-  display: block;
+/*  display: block;
   margin: 0px auto;
   width: 80%;
   padding: 10px;
@@ -32,6 +32,6 @@ li{
   background-color: rgba(0, 0, 0, 0.3);
   color: white;
   font-size: 1vw;
-
+*/
 }
 
