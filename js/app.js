@@ -7,7 +7,6 @@ var nickname;
 
 
 $(window).load(function() {
-
   shaker.authAnonymously(function(error, authData) {
     if (error) {
       console.log("Login Failed!", error);
@@ -20,7 +19,7 @@ $(window).load(function() {
 
       amOnline.on('value', function(snapshot) {
         if (snapshot.val()) {
-          sessionRef = userRef.push();
+          sessionRef = userRef;
           sessionRef.child('ended').onDisconnect().set(Firebase.ServerValue.TIMESTAMP);
           sessionRef.child('began').set(Firebase.ServerValue.TIMESTAMP);
           sessionRef.child('nickname').set(nickname || assumedName());
@@ -35,30 +34,61 @@ $(window).load(function() {
         }
       });
       // Listen for device gyroscope, pass in the session reference to stream the gyro data to firebase
-      pollGyroscope(30, sessionRef);
+      pollGyroscope(300, sessionRef);
 
     }
   });
 });
 
 
-// update list of logged in users
+
+// receives each users data from firebase
+shaker.orderByChild("nickname").on("value", function(snapshot) {
+  if (snapshot.val()) {
+    var currentUsers = [];
+    var began = []
+    for(session in snapshot.val()){
+        // if this session has a nickname propery, and it's not ended (ie. its a current session)
+        if(snapshot.val()[session].nickname && !snapshot.val()[session].ended){
+          currentUsers.push(snapshot.val()[session].nickname);
+          began.push(snapshot.val()[session].began);
+        }
+    }
+    $("#sessions").html(
+      currentUsers.map(function(e){
+        return "<li>"+e+"</li>" ;
+      })
+    )
+     $("#data").html(
+      began.map(function(e){
+        return "<li>"+e+"</li>" ;
+      })
+    )
+  }
+});
+
+// receives each users data from firebase
 shaker.on("value", function(snapshot) {
   if (snapshot.val()) {
     var currentUsers = [];
     for(session in snapshot.val()){
       for(user in snapshot.val()[session]){
-        // if this session has a nickname propery, and it's not ended (ie. its a current session)
         if(snapshot.val()[session][user].nickname && !snapshot.val()[session][user].ended){
-          currentUsers.push(snapshot.val()[session][user].nickname);
+          var userData = {};
+          userData.alpha = snapshot.val()[session][user].alpha;
+          userData.beta = snapshot.val()[session][user].beta;
+          userData.gamma = snapshot.val()[session][user].gamma;
+          currentUsers.push(userData);
         }
+
       }
     }
-    $("#sessions").html(
-      currentUsers.map(function(e){
-        return "<li>"+e+"</li>";
-      })
-    )
+
+    // $("#data").html(
+    //   currentUsers.map(function(e){
+    //     return "<li>"+e.alpha+" "+e.beta+" "+e.gamma+ "</li>" ;
+    //   })
+    // )
   }
 });
 
@@ -68,9 +98,11 @@ function pollGyroscope(rate, sessionRef) {
 
   gyro.frequency = rate;
   gyro.startTracking(function(o) {
-    // get the standard deviation of each gyroscope metric
-    colorBackground(o)
+    var alpha = o.alpha;
+    var beta = o.beta;
+    var gamma = o.gamma;
 
+    colorBackground(o);
 
     // set current user's gyro data
     sessionRef.child('alpha').set(alpha);
