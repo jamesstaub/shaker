@@ -7,7 +7,7 @@ var nickname;
 
 
 $(window).load(function() {
-  // listen for device gyroscope
+
   shaker.authAnonymously(function(error, authData) {
     if (error) {
       console.log("Login Failed!", error);
@@ -34,7 +34,7 @@ $(window).load(function() {
           sessionRef.update({nickname: nickname});
         }
       });
-
+      // Listen for device gyroscope, pass in the session reference to stream the gyro data to firebase
       pollGyroscope(30, sessionRef);
 
     }
@@ -65,10 +65,24 @@ shaker.on("value", function(snapshot) {
 
 function pollGyroscope(rate, sessionRef) {
   // set gyroscope update frequency
-  var gyroData = {};
+
   gyro.frequency = rate;
   gyro.startTracking(function(o) {
     // get the standard deviation of each gyroscope metric
+    colorBackground(o)
+
+
+    // set current user's gyro data
+    sessionRef.child('alpha').set(alpha);
+    sessionRef.child('beta').set(beta);
+    sessionRef.child('gamma').set(gamma);
+  });
+}
+
+
+function colorBackground(o){
+
+    // get std deviation of each value
     var alpha = delta(o.alpha, valueStream.alpha, 10);
     var beta = delta(o.beta, valueStream.beta, 10);
     var gamma = delta(o.gamma, valueStream.gamma, 10);
@@ -78,16 +92,7 @@ function pollGyroscope(rate, sessionRef) {
     beta = scale(beta, -10, 10, 0, 256);
     gamma = scale(gamma, -10, 10, 0, 256);
 
-    // set current user's gyro data
-    sessionRef.child('gyroData').set({
-      alpha : alpha,
-      beta : beta,
-      gamma : gamma
-    })
-
-
-
-    // send values to firebase
+      // send values to firebase
     colorChannels.set({
       alpha: alpha,
       beta: beta,
@@ -101,9 +106,6 @@ function pollGyroscope(rate, sessionRef) {
     }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
     });
-  });
-
-  return gyroData;
 }
 
 
